@@ -9,7 +9,7 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 RUN echo "Asia/Tokyo" > /etc/timezone
 
 ## install packages ##
-#RUN apt-get install -y zsh git curl vim
+#RUN #apt-get install -y zsh git curl vim
 RUN apt-get install -y \
     build-essential  \
     cmake \
@@ -19,6 +19,7 @@ RUN apt-get install -y \
     valgrind \
     vim \
     zsh
+
 #    docker.io
 #    docker-compose
 #    lldb
@@ -32,23 +33,24 @@ RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosu
 RUN echo "source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ~/.zshrc
 
 ## git-prompt and git-completion ##
-RUN mkdir -p ~/.zsh
+RUN mkdir -p ~/.zsh/completion
 RUN curl -o ~/.zsh/git-prompt.sh https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh && \
     curl -o ~/.zsh/git-completion.bash https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash && \
     curl -o ~/.zsh/_git https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.zsh
 
 ## zsh-syntax-highlighting #$
-RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
-RUN echo "source \${(q-)PWD}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ~/.zshrc
+RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
+RUN echo "source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ~/.zshrc
 
 ## zshrc ##
 # git-prompt
 RUN echo "source ~/.zsh/git-prompt.sh" >> ~/.zshrc
 
 # git-completion
-RUN echo "fpath=(~/.zsh $fpath)" >> ~/.zshrc
+RUN echo "fpath=(~/.zsh \$fpath)" >> ~/.zshrc
 RUN echo "zstyle ':completion:*:*:git:*' script ~/.zsh/git-completion.bash" >> ~/.zshrc
-RUN echo "autoload -Uz compinit && compinit" >> ~/.zshrc
+RUN echo "autoload -Uz compinit" >> ~/.zshrc
+RUN echo "compinit -u" >> ~/.zshrc
 
 # prompt
 RUN echo "GIT_PS1_SHOWDIRTYSTATE=true" >> ~/.zshrc
@@ -76,6 +78,10 @@ RUN echo "alias gck='git checkout'" >> ~/.zshrc
 RUN echo "alias gd='git diff'" >> ~/.zshrc
 RUN echo "alias gl='git log'" >> ~/.zshrc
 RUN echo "alias gbD='git branch -D'" >> ~/.zshrc
+RUN echo "alias val='valgrind'" >> ~/.zshrc
+RUN echo "alias valf='valgrind --leak-check=full'" >> ~/.zshrc
+RUN echo "alias valfd='valgrind --leak-check=full --track-fds=all'" >> ~/.zshrc
+RUN echo "alias vala='valgrind --leak-check=full --show-leak-kinds=all'" >> ~/.zshrc
 
 
 ## vim ##
